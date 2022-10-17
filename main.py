@@ -1,6 +1,6 @@
-import menu
+import function
 
 if __name__ == '__main__':
-    menu.check_option()
+    function.show_menu()
 
 
