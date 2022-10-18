@@ -1,13 +1,11 @@
 import products
 
-new_money_value = {'money': 0}
-products.resources.update(new_money_value)
-
 
 def show_menu():
     """
     It presents the different options that the user might select.
     """
+
     customer = True
     while customer:
         user_selection = input("What would you like? (☕️ espresso - ☕️ latte - ☕️ ️cappuccino - 📈 report - "
@@ -16,7 +14,8 @@ def show_menu():
             report()
         elif user_selection == 'espresso' or user_selection == 'latte' or user_selection == 'cappuccino':
             if check_coffee_resources(user_selection):
-                is_enough_money(user_selection)
+                if is_enough_money(user_selection):
+                    make_coffee(products.MENU[user_selection])
             else:
                 check_coffee_resources(user_selection)
         elif user_selection == 'off':
@@ -31,7 +30,7 @@ def report():
     water = products.resources['water']
     milk = products.resources['milk']
     coffee = products.resources['coffee']
-    money = products.resources['money']
+    money = products.money
     print(f"Water: {water}ml\nMilk: {milk}ml\nCoffee: {coffee}g\nMoney: ${money}")
 
 
@@ -46,6 +45,16 @@ def check_coffee_resources(selection):
             print(f"Sorry there is not enough {item}.")
             return False
     return True
+
+
+def make_coffee(beverage):
+    """
+    It will reduced the ingredients used in the user choice from the resources.
+    :param user_choice: input from user drink selection
+    :param beverage: dictionary that contains the ingredients and costs of the menu drinks
+    """
+    for item in beverage['ingredients']:
+        products.resources[item] -= beverage['ingredients'][item]
 
 
 def insert_coins():
@@ -80,10 +89,13 @@ def is_enough_money(user_beverage):
 
     if user_money < price:
         print("Sorry, that's not enough money. Money refunded.")
+        return False
     elif user_money > price:
         change = round((user_money - price), 2)
-        products.resources['money'] += round((user_money - price), 2)
+        products.money += round(price, 2)
         print(f"Here is ${change} in change.\nHere is your ☕️ {user_beverage}. Enjoy!")
+        return True
     else:
-        products.resources['money'] += round(user_money, 2)
+        products.money += round(user_money, 2)
         print(f"Here is your ☕️ {user_beverage}. Enjoy!")
+        return True
